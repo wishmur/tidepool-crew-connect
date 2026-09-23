@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarDays, MapPin, Plus, ArrowRight } from "lucide-react";
 import { Nav } from "@/components/tidepool/Nav";
-import { Avatar, AvatarStack } from "@/components/tidepool/Avatar";
+import { Avatar } from "@/components/tidepool/Avatar";
 import {
   filters,
   featuredEvents,
@@ -59,7 +59,7 @@ function FeaturedCard({ event }: { event: EventCard }) {
             ))}
           </div>
           <span className="text-xs font-medium text-foreground">
-            {event.friendsGoing} of your friends going
+            {event.friendsGoing} of your {event.friendsGoing === 1 ? "friends is" : "friends are"} going
           </span>
         </div>
       </div>
@@ -106,8 +106,15 @@ function FeedCard({ event }: { event: EventCard }) {
 
         <div className="mt-auto flex items-center justify-between pt-5">
           <div className="flex items-center gap-2">
-            <AvatarStack names={friendNames} max={3} size="sm" />
+            <div className="flex -space-x-2">
+              {friendNames.slice(0, event.friendsGoing).map((n, i) => (
+                <Avatar key={n} name={n} index={i} size="sm" />
+              ))}
+            </div>
             <span className="text-xs font-medium text-muted-foreground">
+              {event.friendsGoing > 0 && (
+                <>{event.friendsGoing} {event.friendsGoing === 1 ? "friend" : "friends"} · </>
+              )}
               {event.going} going
             </span>
           </div>
@@ -123,6 +130,8 @@ function FeedCard({ event }: { event: EventCard }) {
 
 function Discover() {
   const [active, setActive] = useState("All");
+  const visible =
+    active === "All" ? feedEvents : feedEvents.filter((e) => e.tags.includes(active));
 
   return (
     <div className="min-h-screen bg-background">
@@ -134,7 +143,9 @@ function Discover() {
           <h1 className="font-display text-4xl italic text-foreground sm:text-5xl">
             What's your crew up to?
           </h1>
-          <p className="mt-2 text-lg text-muted-foreground">Group volunteering, near you.</p>
+          <p className="mt-2 text-lg text-muted-foreground">
+            Volunteering that doubles as a group hang, near you.
+          </p>
         </section>
 
         {/* Filter chips */}
@@ -144,6 +155,7 @@ function Discover() {
               <button
                 key={f}
                 onClick={() => setActive(f)}
+                aria-pressed={active === f}
                 className={cn(
                   "whitespace-nowrap rounded-full border border-border/60 px-4 py-2 text-sm font-medium transition-all duration-300 ease-out",
                   active === f
@@ -172,11 +184,28 @@ function Discover() {
         {/* Feed */}
         <section className="mt-12">
           <h2 className="font-display text-2xl italic text-foreground">Events near you</h2>
-          <div className="mt-4 grid gap-5 sm:grid-cols-2">
-            {feedEvents.map((e) => (
-              <FeedCard key={e.id} event={e} />
-            ))}
-          </div>
+          {visible.length > 0 ? (
+            <div className="mt-4 grid gap-5 sm:grid-cols-2">
+              {visible.map((e) => (
+                <FeedCard key={e.id} event={e} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-4 rounded-3xl border border-border/60 bg-card p-10 text-center shadow-soft">
+              <p className="font-display text-xl italic text-foreground">
+                Nothing here yet.
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                No {active.toLowerCase()} events near you right now — try another vibe.
+              </p>
+              <button
+                onClick={() => setActive("All")}
+                className="mt-5 rounded-full bg-terracotta px-5 py-2.5 text-sm font-semibold text-terracotta-foreground shadow-soft transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lift"
+              >
+                Show everything
+              </button>
+            </div>
+          )}
         </section>
       </main>
 

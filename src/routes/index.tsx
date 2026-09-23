@@ -37,7 +37,7 @@ export const Route = createFileRoute("/")({
 const stats = [
   { value: "300 lbs", label: "Projected plastic removed", tone: "bg-butter text-butter-foreground" },
   { value: "24", label: "People joining", tone: "bg-peach text-peach-foreground" },
-  { value: "5", label: "Friends in your crew", tone: "bg-sage text-sage-foreground" },
+  { value: "5", label: "Friends going", tone: "bg-sage text-sage-foreground" },
 ];
 
 const bring = [

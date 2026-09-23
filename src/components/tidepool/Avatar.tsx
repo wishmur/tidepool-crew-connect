@@ -13,7 +13,7 @@ function initials(name: string) {
 const sizes = {
   sm: "h-8 w-8 text-xs",
   md: "h-10 w-10 text-sm",
-  lg: "h-12 w-12 text-base",
+  lg: "h-11 w-11 text-base sm:h-12 sm:w-12",
 };
 
 export function Avatar({
@@ -57,7 +57,7 @@ export function AvatarStack({
   const shown = names.slice(0, max);
   const extra = names.length - shown.length;
   return (
-    <div className="flex items-center">
+    <div className="flex flex-wrap items-center gap-y-2">
       <div className="flex -space-x-3">
         {shown.map((n, i) => (
           <Avatar key={n + i} name={n} index={i} size={size} />
